@@ -1,20 +1,28 @@
 const APIUtil = require("./api_util");
+const Toggle = require("./follow_toggle");
 
 class UsersSearch{
   constructor($el){
     this.$el = $el;
-    this.input = this.$el.children("input");
-    this.ul = this.$el.children("ul");
-    // this.checkStuff();
+    this.input = this.$el.find("input");
+    this.ul = this.$el.find("ul");
+
+    this.$el.on('input', this.handleInput.bind(this));
   }
 
-  // checkStuff() {
-  //   console.log(this.$el);
-  //   console.log(1, this.input, this.ul, this.input.val());
-  // }
+  handleInput(e) {
+    APIUtil.searchUsers(this.input.val())
+    .then((users) => (this.renderResults(users))
+    );
+  }
 
-  handleInput() {
-    APIUtil.searchUsers(this.input.val());
+  renderResults(users) {
+    this.ul.empty();
+    users.forEach((el) => {
+      this.ul.append(`<li>${el.username}</li>`);
+      this.ul.append(`<button type="button" class="follow-toggle"></button>`);
+      console.log(new Toggle($(el), {userId: el.id, followState: "followed"}));
+    });
   }
 }
 
